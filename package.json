@@ -1,0 +1,29 @@
+{
+  "name": "twitch-gold-digger",
+  "version": "1.0.0",
+  "description": "A little Chrome extension to automate claiming channel point for maximum profit",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/justaddcl/twitch-gold-digger.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/justaddcl/twitch-gold-digger/issues"
+  },
+  "homepage": "https://github.com/justaddcl/twitch-gold-digger#readme",
+  "devDependencies": {
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.2.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-prettier": "^3.1.4",
+    "prettier": "^2.0.5"
+  }
+}
