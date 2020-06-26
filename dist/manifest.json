@@ -9,7 +9,16 @@
     "persistent": false
   },
   "page_action": {
-    "default_title": "Twitch Gold Digger"
+    "default_title": "Twitch Gold Digger",
+    "default_popup": "popup/popup.html"
   },
-  "permissions": ["declarativeContent"]
+  "content_scripts": [
+    {
+      "matches": ["*://*.twitch.tv/*"],
+      "exclude_globs": ["*://*.twitch.tv/"],
+      "run_at": "document_idle",
+      "js": ["pointsObserver.js"]
+    }
+  ],
+  "permissions": ["activeTab", "declarativeContent"]
 }
