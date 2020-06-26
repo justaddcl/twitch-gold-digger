@@ -12,4 +12,3 @@ chrome.runtime.onInstalled.addListener(() => {
     ]);
   });
 });
-chrome.pageAction.onClicked.addListener(() => alert('Pooooggg'));
