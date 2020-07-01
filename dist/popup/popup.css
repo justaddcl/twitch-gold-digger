@@ -1,0 +1,15 @@
+:root {
+  --purple: #9146ff;
+  --white: #f0f0ff;
+  --teal: #00c8af;
+}
+
+body {
+  background-color: var(--purple);
+  color: var(--white);
+  padding: 24px;
+}
+
+.hidden {
+  display: none;
+}
