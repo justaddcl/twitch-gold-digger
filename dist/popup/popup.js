@@ -1,3 +1,4 @@
+const pointsGroupEl = document.querySelector('#points-group');
 const cpEl = document.querySelector('#channel-points');
 const getCpBtn = document.querySelector('button#get-channel-points');
 const startObserverBtn = document.querySelector('button#observe');
@@ -22,6 +23,10 @@ chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
       { action: 'getChannelPoints' },
       response => {
         setChannelPoints(response.channelPoints);
+
+        if (pointsGroupEl.classList.contains('hidden')) {
+          pointsGroupEl.classList.remove('hidden');
+        }
       }
     );
   };
