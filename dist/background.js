@@ -4,7 +4,7 @@ chrome.runtime.onInstalled.addListener(() => {
       {
         conditions: [
           new chrome.declarativeContent.PageStateMatcher({
-            pageUrl: { hostContains: '.twitch.' },
+            pageUrl: { urlMatches: 'www.twitch.tv/.+' },
           }),
         ],
         actions: [new chrome.declarativeContent.ShowPageAction()],
@@ -12,3 +12,5 @@ chrome.runtime.onInstalled.addListener(() => {
     ]);
   });
 });
+// run js instead of displaying popup
+// chrome.pageAction.onClicked.addListener(() => alert('Pooooggg'));
