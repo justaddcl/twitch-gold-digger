@@ -1,28 +1,52 @@
-const pointsGroupEl = document.querySelector('#points-group');
+const pointsGroupEl = document.querySelector('#points__group');
 const cpEl = document.querySelector('#channel-points');
-const getCpBtn = document.querySelector('button#get-channel-points');
-const startObserverBtn = document.querySelector('button#observe');
-const disconnectBtn = document.querySelector('button#disconnect');
+const pointsStatusEl = document.querySelector('#points__status');
+const observerToggle = document.querySelector('input#observer-toggle');
 
-const setChannelPoints = points => {
+const setChannelPointsText = points => {
+  pointsStatusEl.innerText = '';
   cpEl.innerText = `${points}`;
 };
 
 chrome.runtime.onMessage.addListener(request => {
   if (request.channelPoints) {
-    setChannelPoints(request.channelPoints);
+    console.log(`channel points received! ${request.channelPoint}`);
+    setChannelPointsText(request.channelPoints);
   }
 });
 
 chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
   const [currentTab] = tabs;
 
+  const setStatus = status => {
+    chrome.tabs.sendMessage(currentTab.id, { action: 'setStatus', status });
+  };
+
+  const setToggle = () => {
+    chrome.tabs.sendMessage(
+      currentTab.id,
+      { action: 'getStatus' },
+      response => {
+        observerToggle.checked = response.status;
+
+        if (response.status) {
+          document.querySelector('body').classList.add('active');
+        } else if (
+          document.querySelector('body').classList.contains('active')
+        ) {
+          document.querySelector('body').classList.remove('active');
+        }
+      }
+    );
+  };
+
   const getChannelPoints = () => {
+    pointsStatusEl.innerText = 'Fetching channel points...';
     chrome.tabs.sendMessage(
       currentTab.id,
       { action: 'getChannelPoints' },
       response => {
-        setChannelPoints(response.channelPoints);
+        setChannelPointsText(response.channelPoints);
 
         if (pointsGroupEl.classList.contains('hidden')) {
           pointsGroupEl.classList.remove('hidden');
@@ -31,15 +55,20 @@ chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
     );
   };
 
-  getCpBtn.onclick = () => getChannelPoints();
+  observerToggle.addEventListener('click', () => {
+    if (observerToggle.checked) {
+      chrome.tabs.sendMessage(currentTab.id, { action: 'startObserver' });
+    } else {
+      chrome.tabs.sendMessage(currentTab.id, { action: 'disconnectObserver' });
+    }
+    setToggle();
+  });
 
-  startObserverBtn.onclick = () => {
-    chrome.tabs.sendMessage(currentTab.id, { action: 'startObserver' });
+  const init = () => {
+    setToggle();
+    getChannelPoints();
+    // TODO: set initial point value
   };
 
-  disconnectBtn.onclick = () => {
-    chrome.tabs.sendMessage(currentTab.id, { action: 'disconnectObserver' });
-  };
+  init();
 });
-
-// TODO: get channel points on page action click
