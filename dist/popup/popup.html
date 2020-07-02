@@ -4,12 +4,17 @@
     <link rel="stylesheet" href="popup.css" />
   </head>
   <body>
-    <h1 id="points-group" class="hidden">
+    <h1 id="points__group" class="hidden">
       <span id="channel-points"></span> channel points
     </h1>
-    <button id="get-channel-points">Get channel points</button>
-    <button id="observe">Start Twitch Gold Digger</button>
-    <button id="disconnect">Disconnect observer</button>
+    <p id="points__status"></p>
+    <!-- <button id="get-channel-points">Get channel points</button> -->
+    <section class="toggle__group toggle__group--inline">
+      <span>Off</span>
+      <input type="checkbox" id="observer-toggle" class="toggle" />
+      <label for="observer-toggle" class="toggle"></label>
+      <span>On</span>
+    </section>
     <script src="popup.js"></script>
   </body>
 </html>
