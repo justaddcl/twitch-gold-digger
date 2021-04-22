@@ -2,9 +2,54 @@ const twitchStyle = 'background: #9146ff; color: #f0f0ff; padding: 16px;';
 const twitchStyleReverse =
   'background: #f0f0ff; color: #9146ff; padding: 16px;';
 
+const currentStream = window.location.pathname.replace('/', '');
+
+sessionStorage.setItem(
+  `twitch-gold-digger:log-exists-for:${currentStream}`,
+  !!window.localStorage.getItem(`twitch-gold-digger:log:${currentStream}`)
+);
+
 const getTimeStamp = () => {
   const now = new Date(Date.now());
   return `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
+};
+
+const createLogEntry = (type, points) => {
+  const pointsUpdate = {};
+
+  if (type === 'POINTS') {
+    console.log(points);
+    console.log(`points.old: ${points.oldValue}`);
+    console.log(`points.updated: ${points.updatedValue}`);
+    pointsUpdate.old = points.oldValue;
+    pointsUpdate.new = points.updatedValue;
+  }
+
+  return {
+    time: new Date(Date.now()),
+    type,
+    points,
+  };
+};
+
+const logEvent = (type, points = {}) => {
+  const newLog = {
+    time: new Date(Date.now()),
+    type,
+    points,
+  };
+  const logUpdate =
+    sessionStorage.getItem(
+      `twitch-gold-digger:log-exists-for:${currentStream}`
+    ) === 'true'
+      ? JSON.parse(
+          window.localStorage.getItem(`twitch-gold-digger:log:${currentStream}`)
+        ).concat(newLog)
+      : new Array(newLog);
+  window.localStorage.setItem(
+    `twitch-gold-digger:log:${currentStream}`,
+    JSON.stringify(logUpdate)
+  );
 };
 
 // listen for document ready since run_at: document_idle isn't working
@@ -12,13 +57,11 @@ document.onreadystatechange = () => {
   const cpEl = document.querySelector(
     '.tw-tooltip.tw-tooltip--align-center.tw-tooltip--right'
   );
+  // .div.tw-transition.tw-transition--exit-active.tw-transition__scale-over.tw-transition__scale-over--exit-active
 
-  let channelPoints = '';
+  const channelPoints = '';
 
-  const getChannelPoints = () => {
-    [channelPoints] = cpEl.innerText.split(' ');
-    return channelPoints;
-  };
+  const getChannelPoints = () => cpEl.innerText.split(' ')[0];
 
   // set up observer to see when reward is claimable
   const chatInputButtonsEl = '.chat-input__buttons-container';
@@ -66,6 +109,7 @@ document.onreadystatechange = () => {
     if (updatedValue > oldValue) {
       // TODO: add chat message for when channel points change
       // TODO: add time stamp for message
+      logEvent('POINTS', { oldValue, updatedValue });
       console.log(
         `%c ${getTimeStamp()} - Received channel points!`,
         twitchStyleReverse
@@ -82,12 +126,13 @@ document.onreadystatechange = () => {
   const channelPointsObserver = new MutationObserver(callback);
 
   const observe = () => {
+    logEvent('STARTED');
     channelPointsObserver.observe(targetEl, observerOptions);
     console.log(`%cTwitch Gold Digger observer started`, twitchStyle);
   };
 
   const setStatus = status => {
-    sessionStorage.setItem('twitchGoldDiggerIsActive', status);
+    sessionStorage.setItem('twitch-gold-digger:is-active', status);
   };
 
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -97,7 +142,7 @@ document.onreadystatechange = () => {
 
     if (request.action === 'getStatus') {
       const status =
-        sessionStorage.getItem('twitchGoldDiggerIsActive') === 'true';
+        sessionStorage.getItem('twitch-gold-digger:is-active') === 'true';
       sendResponse({ status });
     }
 
@@ -112,6 +157,7 @@ document.onreadystatechange = () => {
 
     if (request.action === 'disconnectObserver') {
       channelPointsObserver.disconnect();
+      logEvent('DISCONNECTED');
       setStatus(false);
       console.log(`%cTwitch Gold Digger observer disconnected`, twitchStyle);
     }

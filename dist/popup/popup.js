@@ -18,6 +18,9 @@ chrome.runtime.onMessage.addListener(request => {
 chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
   const [currentTab] = tabs;
 
+  // TODO: disconnect observer if page is refreshed or goes to a different URL
+  // TODO: handle raids / hosts / offline
+
   const setStatus = status => {
     chrome.tabs.sendMessage(currentTab.id, { action: 'setStatus', status });
   };
@@ -66,7 +69,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
 
   const init = () => {
     setToggle();
-    getChannelPoints();
+    // getChannelPoints();
     // TODO: set initial point value
   };
 
